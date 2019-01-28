@@ -45,6 +45,8 @@ print(error)
 #install.packages("randomForest")
 library(randomForest)
 ```
+
+
 ```{r}
 set.seed(350)
 
@@ -55,20 +57,34 @@ N=dim(df.train)[1] # Total sample size
 n=floor(N/k) # Split sample size
 error.all=rep(0, 40) # error.all records the cross validation error with different nodesizes. 
 ```
+
+
+
 ```{r}
 for (j in (1:40)){
 	ind=sample(N) # Random permutation of all the samples. 
 	error=rep(0, k) # error records the misclassification error for each split as the testing data within cross validation. 
 	for (i in 1:k){
 		test=ind[(((i-1)*n+1):(min(i*n, N)))] # Choose the ith split as the testing data
+		#print(df.train[test,])
+		trainindices=setdiff(ind,test)
+		#print(df.train[trainindices,])
 		rf.model = randomForest(Reverse ~ Circuit + Issue + 
-		Petitioner + Respondent + LowerCourt + Unconst, data = test, ntree=200, nodesize=j+10) # Complete this line!
-		rf.prediction = predict(rf.model, newdata = test, type = "class") # Complete this line!
+		Petitioner + Respondent + LowerCourt + Unconst, data = df.train[trainindices,], ntree=200, nodesize=j+10) # Complete this line!
+		#print("rfmodel created")
+		rf.prediction = predict(rf.model, newdata = df.train[test,], type = "class") # Complete this line!
 		error[i]=sum(rf.prediction!=test)/length(test)	# Complete this line!
 		cat("=======", j, ",", i, "=======", "\n")
 	}
 	error.all[j]=mean(error)
 }
 nodesize.opt=10+which(error.all==min(error.all))[1] # In case there are multiple matches, we take the first one.
+```
+```{r}
+# The following code is for calculating the misclassification error on the real testing data using the best tuned nodesize.
+rf.model <- randomForest(Reverse ~ Circuit + Issue + Petitioner + Respondent + LowerCourt + Unconst, data = df.train, ntree=10, nodesize=nodesize.opt) # Complete this line
+rf.prediction= predict(rf.model, newdata= df.test, type="class") # Complete this line
+error=sum(rf.prediction!=df.test$Reverse)/(dim(df.test)[1])# Complete this line		
+print(error)
 ```
 
