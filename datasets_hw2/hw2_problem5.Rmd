@@ -1,0 +1,53 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+load(file="iPinYou.RData")
+ls()
+```
+```{r}
+dt<-data.frame(dataTest)
+tracemem(dt) == tracemem(dataTest)
+
+```
+```{r}
+#Create 5 columns for city: all 0  means city 1, otherwise, whichever column is 1 is the city number in that column's name
+dt<-transform(dt, C2=ifelse(City==2,1,0),C3=ifelse(City==3,1,0),C4=ifelse(City==4,1,0),C5=ifelse(City==5,1,0),C6=ifelse(City==6,1,0))
+dt<-transform(dt, R3=ifelse(Region==3,1,0),R6=ifelse(Region==6,1,0))
+dt<-transform(dt, AdX2=ifelse(AdX==2,1,0),AdX3=ifelse(AdX==3,1,0))
+#if all cols are zero, domain is trqRTuT-GNTYJNKbuKz ie id 500001
+dt<-transform(dt, Domain2=ifelse(Domain=="5Fa-expoBTTR1m58uG",1,0),Domain4=ifelse(Domain=="trqRTu5Jg9q9wMKYvmpENpn",1,0),Domain10=ifelse(Domain=="trqRTudNXqN8ggc4JKTI",1,0),Domain248=ifelse(Domain=="5KFUl5p0Gxsvgmd4wspENpn",1,0))
+dt<-transform(dt, Key_Page2=ifelse(Key_Page=="3a7eb50444df6f61b2409f4e2f16b687",1,0),Key_Page3=ifelse(Key_Page=="df6f61b2409f4e2f16b6873a7eb50444",1,0))
+#if all cols are zero, advis is 2 ie id is 500001
+dt<-transform(dt, Ad_Vis5=ifelse(Ad_Vis==1,1,0),Ad_Vis3=ifelse(Ad_Vis==0,1,0))
+dt<-transform(dt, Ad_Form2=ifelse(Ad_Form==1,1,0))
+
+#calculate mean and standard deviation for the last 3 columns
+Ad_Width_mean<-mean(dt$Ad_Width)
+Ad_Width_std<-sd(dt$Ad_Width)
+Ad_Height_mean<-mean(dt$Ad_Height)
+Ad_Height_std<-sd(dt$Ad_Height)
+Floor_Price_mean<-mean(dt$Floor_Price)
+Floor_Price_std<-sd(dt$Floor_Price)
+
+dt<-transform(dt, Ad_Width=(Ad_Width-Ad_Width_mean)/Ad_Width_std)
+dt<-transform(dt, Ad_Height=(Ad_Height-Ad_Height_mean)/Ad_Height_std)
+dt<-transform(dt, Floor_Price=(Floor_Price-Floor_Price_mean)/Floor_Price_std)
+
+#print(dt)
+```
+```{r}
+unique(dt["City"])
+unique(dt["Region"])
+unique(dt["AdX"])
+unique(dt["Domain"])
+unique(dt["Key_Page"])
+unique(dt["Ad_Vis"])
+unique(dt["Ad_Form"])
+```
+```{r}
+
+```
+
